@@ -1,0 +1,54 @@
+{% extends 'base_superadmin.html' %}
+
+{% block title %}
+Tampil Data
+{% endblock %}
+
+{% block additional_css %}
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/table_superadmin.css') }}" />
+{% endblock %}
+
+{% block sidebar %}
+<a href="/tampil_data_superadmin" class="active">
+  <i class="bx bxs-spreadsheet icon"></i> Data Employee
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2 class="headline">Data Karyawan</h2>
+
+  <!-- Form Pencarian -->
+  <form method="GET" action="{{ url_for('tampil_data.tampil_data_superadmin') }}" class="search-form">
+    <input type="text" name="query" placeholder="Cari berdasarkan nama karyawan" value="{{ request.args.get('query', '') }}" />
+    <button type="submit">Cari</button>
+  </form>
+
+  <div class="table-responsive">
+    <ul class="responsive-table">
+      <li class="table-header">
+        <div class="col col-1">No</div>
+        <div class="col col-2">ID Karyawan</div>
+        <div class="col col-3">Nama Karyawan</div>
+        <div class="col col-3">Aksi</div>
+      </li>
+      {% for row in data_list %}
+      <li class="table-row">
+          <div class="col col-1" data-label="No">{{ loop.index }}</div>
+          <div class="col col-2" data-label="ID Karyawan">{{ row[0] }}</div>
+          <div class="col col-3" data-label="Nama Karyawan">{{ row[1] }}</div>
+          <div class="col col-4" data-label="Aksi">
+            <a href="{{ url_for('update_data.update_employee_superadmin', id_karyawan=row[0]) }}">Edit</a>
+              <form action="{{ url_for('hapus_data.hapus_karyawan', id_karyawan=row[0]) }}" method="POST" style="display:inline;">
+                <button type="submit">Hapus</button>
+              </form>
+          </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% if data_list|length == 0 %}
+    <p>Tidak ada data yang ditemukan.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

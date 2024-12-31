@@ -1,0 +1,110 @@
+{% extends 'base_superadmin.html' %}
+
+{% block title %}Upload Page{% endblock %}
+
+{% block additional_css %}
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/upload.css') }}" />
+{% endblock %}
+
+{% block content %}
+{% if badImage %}
+<script>
+  alert("You have uploaded a bad image");
+</script>
+{% endif %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <ul class="flashes">
+    {% for category, message in messages %}
+      <li class="{{ category }}">{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+<div>
+  <h1 class="headline">Enter the Employee details</h1>
+
+  <form enctype="multipart/form-data" action="/upload_superadmin" method="POST">
+    <div class="form-group">
+      <span>Name</span>
+      <input required class="form-field" id="name" name="name" type="text" placeholder="eg: Novi Setiani" />
+    </div>
+
+    <div class="form-group">
+      <span>Employee ID</span>
+      <input required class="form-field" id="roll" name="roll" type="text" placeholder="eg: 123321" />
+    </div>
+
+    <!--<div class="form-group">
+      <span>Region</span>
+      <select required class="form-field" id="region_id" name="region_id">
+        <option value="">Select Region</option>
+        {% for region in regions %}
+          <option value="{{ region.id }}">{{ region.name }}</option>
+        {% endfor %}
+      </select>
+    </div>-->
+
+    <div class="file-upload">
+      <button class="file-upload-btn" type="button" onclick="document.getElementById('images').click();">
+        Add Images (Up to 5)
+      </button>
+      <input required class="file-upload-input" type="file" id="images" name="images" multiple onchange="previewImages(this);" accept="image/*" />
+      <div class="image-upload-wrap">
+        <h3>Drag and drop files or click to select images</h3>
+      </div>
+
+      <div id="preview-container" class="file-upload-content">
+        <!-- Preview of uploaded images will be shown here -->
+      </div>
+    </div>
+
+    <div class="camera-capture">
+      <video id="video" width="300" height="200" autoplay></video>
+      <button type="button" onclick="captureImage()">Capture Image</button>
+      <input type="hidden" id="image_data" name="image_data" />
+    </div>
+
+    <button class="button" type="submit">
+      <span class="submit">Upload</span>
+      <span class="loading"><i class="fa fa-refresh"></i></span>
+      <span class="check"><i class="fa fa-check"></i></span>
+    </button>
+  </form>
+</div>
+
+{% endblock %}
+
+{% block java %}
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+<script>
+  function previewImages(input) {
+    const previewContainer = document.getElementById('preview-container');
+    const existingImages = previewContainer.querySelectorAll('img'); // Ambil gambar yang sudah ada
+    const currentFiles = Array.from(input.files);
+    
+    // Jika ada gambar yang sudah ada, tambahkan ke array
+    const allFiles = Array.from(existingImages).map(img => img.src).concat(currentFiles.map(file => URL.createObjectURL(file)));
+
+    previewContainer.innerHTML = ''; // Hapus pratinjau sebelumnya
+
+    if (allFiles.length > 5) {
+      alert("Anda dapat mengunggah maksimal 5 gambar.");
+      input.value = ''; // Hapus input jika lebih dari 5 file dipilih
+      return;
+    }
+
+    allFiles.forEach((src, index) => {
+      const imgElement = document.createElement('img');
+      imgElement.src = src;
+      imgElement.className = 'file-upload-image';
+      imgElement.alt = `Gambar ${index + 1}`;
+      imgElement.style.maxWidth = '150px';
+      imgElement.style.margin = '10px';
+      previewContainer.appendChild(imgElement);
+    });
+  }
+</script>
+{% endblock %}
