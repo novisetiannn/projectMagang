@@ -26,11 +26,11 @@ app.register_blueprint(tampil_data)
 app.register_blueprint(update_data)
 app.register_blueprint(hapus_data)
 app.register_blueprint(table)
-app.register_blueprint(upload)
+app.register_blueprint(upload, url_prefix='/upload')
 app.register_blueprint(attendancee)
 app.register_blueprint(vid)
 app.register_blueprint(report)
 
-if __name__ == "__main__":
+if __name__ == "_main_":
     load_known_faces()
     app.run(host='127.0.0.1', port=5000, debug=True)
